@@ -1,10 +1,12 @@
 package sysats.client.gui;
 
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.PrintWriter;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -230,11 +232,18 @@ public class MainWindow extends javax.swing.JFrame {
 	}
 
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-		out.println(this.getUsername() + "?" + jTextArea1.getText());
-		out.flush();
+		String message = jTextArea1.getText();
 		jTextArea1.setText("");
+		if (message.length())
+			sendMessage();
 	}
 
+	private void sendMessage(String message) {
+		System.out.println(message);
+		out.println(this.getUsername() + "?" + message);
+		out.flush();
+	}
+	
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
 		// keisti varda listeneris
 		String temp = jTextField1.getText();
@@ -247,7 +256,14 @@ public class MainWindow extends javax.swing.JFrame {
 
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
 		// atsijungti listeneris
-		System.exit(-1);
+//		System.exit(-1);
+		JFileChooser fc = new JFileChooser();
+		fc.setApproveButtonText("Siųsti");
+		if (fc.showOpenDialog(this) == fc.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			
+			sendMessage("File sent: " + file.getName());
+		}
 	}
 
 	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
