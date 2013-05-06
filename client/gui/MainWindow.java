@@ -1,7 +1,12 @@
 package sysats.client.gui;
 
 import java.awt.event.ActionEvent;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 
 import javax.swing.AbstractAction;
@@ -234,8 +239,8 @@ public class MainWindow extends javax.swing.JFrame {
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
 		String message = jTextArea1.getText();
 		jTextArea1.setText("");
-		if (message.length())
-			sendMessage();
+		if (message.length() > 0)
+			sendMessage(message);
 	}
 
 	private void sendMessage(String message) {
@@ -260,7 +265,23 @@ public class MainWindow extends javax.swing.JFrame {
 		JFileChooser fc = new JFileChooser();
 		fc.setApproveButtonText("Siųsti");
 		if (fc.showOpenDialog(this) == fc.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();
+			File file = fc.getSelectedFile();			
+			InputStream input;
+			try {
+				input = new BufferedInputStream(new FileInputStream(file));
+			}
+			catch (FileNotFoundException e) {
+				return;
+			}
+
+			byte[] data = new byte[(int)file.length()];
+			try {
+				input.read(data);
+			}
+			catch (IOException e) {
+				return;
+			}
+			//TODO: send data to server, server sends to clients
 			
 			sendMessage("File sent: " + file.getName());
 		}
