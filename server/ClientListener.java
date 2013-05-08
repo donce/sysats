@@ -23,18 +23,22 @@ public class ClientListener extends Thread {
 	}
 
 	public void run() {
+		System.out.println("Logged in.");
 		try {
 			Date date = new Date();
 			while (!isInterrupted()) {
-				String message = new Timestamp(date.getTime()) + "?"
-						+ in.readLine();// pridedam timestampa, kai ateina is
-										// serverio zinute
+				//pridedam timestampa, kai ateina is serverio zinute
+				String text = in.readLine();
+				if (text == null)
+					break;
+				String message = new Timestamp(date.getTime()) + "?" + text;
 				serverDispatcher.dispatchMessage(clientInfo, message);
 			}
 		} catch (IOException e) {
 		}
 		clientInfo.clientSender.interrupt();
 		serverDispatcher.removeClient(clientInfo);
+		System.out.println("Logged out.");
 	}
 
 }

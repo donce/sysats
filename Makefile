@@ -1,6 +1,9 @@
 OUTPUT = bin
 
-all: sysats-client sysats-server
+all: basic sysats-client sysats-server
+
+basic:
+	mkdir -p bin
 
 sysats-server: server/Server.java
 	javac -cp ../ -d $(OUTPUT) server/Server.java

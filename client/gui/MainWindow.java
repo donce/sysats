@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.swing.AbstractAction;
@@ -29,18 +30,17 @@ public class MainWindow extends javax.swing.JFrame {
 	private javax.swing.JTextArea jTextArea1;
 	private javax.swing.JTextPane jTextPane2;
 	private PrintWriter out = null;
+	private OutputStream output = null;
 	private String username = "anon";
 	private Action enterAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent tf) {
-			out.println(jTextField1.getText() + "?" + jTextArea1.getText());
-			out.flush();
-			jTextArea1.setText("");
+			sendCurrentMessage();
 		}
-
 	};
 
-	public MainWindow(PrintWriter out) {
+	public MainWindow(PrintWriter out, OutputStream output) {
 		this.out = out;
+		this.output = output;
 		this.setTitle("Sysats");
 		this.setResizable(false);
 		try {
@@ -237,6 +237,10 @@ public class MainWindow extends javax.swing.JFrame {
 	}
 
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+		sendCurrentMessage();
+	}
+	
+	private void sendCurrentMessage() {
 		String message = jTextArea1.getText();
 		jTextArea1.setText("");
 		if (message.length() > 0)

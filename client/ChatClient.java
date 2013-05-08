@@ -3,6 +3,7 @@ package sysats.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -16,6 +17,7 @@ public class ChatClient {
 	private volatile String username;
 	private BufferedReader in = null;
 	private PrintWriter out = null;
+	private OutputStream output = null;
 
 	public void start() {
 
@@ -23,8 +25,8 @@ public class ChatClient {
 			Socket socket = new Socket(HOSTNAME, PORT);
 			in = new BufferedReader(new InputStreamReader(
 					socket.getInputStream()));
-			out = new PrintWriter(new OutputStreamWriter(
-					socket.getOutputStream()));
+			output = socket.getOutputStream();
+			out = new PrintWriter(new OutputStreamWriter(output));
 			System.out.println("Connected to server " + HOSTNAME + ":" + PORT);
 		} catch (IOException ioe) {
 			System.err.println("Can not establish connection to " + HOSTNAME
@@ -35,14 +37,13 @@ public class ChatClient {
 
 		java.awt.EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				mw = new MainWindow(out);
+				mw = new MainWindow(out, output);
 			}
 		});
 
 		try {
 			String message;
-			while ((message = in.readLine()) != null) {// skaitom zinutes is
-														// serverio
+			while ((message = in.readLine()) != null) {// skaitom zinutes is serverio
 				System.out.println(message);
 				mw.updateTextPane(message);
 			}
