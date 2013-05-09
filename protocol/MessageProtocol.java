@@ -9,8 +9,7 @@ public class MessageProtocol extends Protocol {
 		
 	}
 	
-	public MessageProtocol(String username, String message) {
-		super(username);
+	public MessageProtocol(String message) {
 		this.message = message;
 	}
 

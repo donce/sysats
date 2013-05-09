@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import sysats.protocol.ChangeUsernameProtocol;
 import sysats.protocol.FileProtocol;
 import sysats.protocol.MessageProtocol;
 
@@ -41,6 +42,7 @@ public class ClientListener extends Thread {
 				continue;
 			Protocol protocol = (Protocol)object;
 			protocol.updateTime();
+			protocol.setUsername(clientInfo.username);
 			handleProtocol(protocol);
 		}
 		clientInfo.clientSender.interrupt();
@@ -49,12 +51,25 @@ public class ClientListener extends Thread {
 	}
 
 	private void handleProtocol(Protocol protocol) {
-		if (protocol instanceof MessageProtocol) {
-			serverDispatcher.dispatchMessage(clientInfo, protocol);
-		}
-		else if (protocol instanceof FileProtocol) {
-			//TODO: send message about file
-			serverDispatcher.dispatchMessage(clientInfo, protocol);
-		}
+		if (protocol instanceof MessageProtocol)
+			handleMessage((MessageProtocol)protocol);
+		else if (protocol instanceof FileProtocol)
+			handleFile((FileProtocol)protocol);
+		else if (protocol instanceof ChangeUsernameProtocol)
+			handleChangeUsername((ChangeUsernameProtocol)protocol);
+	}
+	
+	private void handleMessage(MessageProtocol message) {
+		serverDispatcher.dispatchMessage(clientInfo, message);
+	}
+	
+	private void handleFile(FileProtocol file) {
+		//TODO: send message about file
+		serverDispatcher.dispatchMessage(clientInfo, file);
+	}
+	
+	private void handleChangeUsername(ChangeUsernameProtocol changeUsername) {
+		clientInfo.username = changeUsername.getNewUsername();
+		//TODO: send message
 	}
 }

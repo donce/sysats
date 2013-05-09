@@ -8,8 +8,7 @@ public class FileProtocol extends Protocol {
 	
 	}
 	
-	public FileProtocol(String username, String filename, byte[] data) {
-		super(username);
+	public FileProtocol(String filename, byte[] data) {
 		this.filename = filename;
 		this.data = data;
 	}

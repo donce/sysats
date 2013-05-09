@@ -18,6 +18,7 @@ import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import sysats.protocol.ChangeUsernameProtocol;
 import sysats.protocol.FileProtocol;
 import sysats.protocol.MessageProtocol;
 import sysats.protocol.Protocol;
@@ -33,7 +34,7 @@ public class MainWindow extends javax.swing.JFrame {
 	private javax.swing.JTextArea jTextArea1;
 	private javax.swing.JTextPane jTextPane2;
 	private ObjectOutputStream out = null;
-	private String username = "anon";
+	private String username = "Bevardis";
 	
 	private final byte FILE_SIGNATURE = 7;
 	
@@ -271,7 +272,7 @@ public class MainWindow extends javax.swing.JFrame {
 	
 	private void sendMessage(String message) {
 		System.out.println(message);
-		sendProtocol(new MessageProtocol(this.getUsername(), message));
+		sendProtocol(new MessageProtocol(message));
 	}
 	
 	private void sendFile(File file) {
@@ -290,15 +291,19 @@ public class MainWindow extends javax.swing.JFrame {
 		catch (IOException e) {
 			return;
 		}
-		sendProtocol(new FileProtocol(this.getUsername(), file.getName(), data));
+		sendProtocol(new FileProtocol(file.getName(), data));
+	}
+	
+	private void changeUsername(String newUsername) {
+		if (newUsername.length() == 0)
+			return;
+		sendProtocol(new ChangeUsernameProtocol(newUsername));
+//		setUsername(temp);
 	}
 	
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
 		// keisti varda listeneris
-		String temp = jTextField1.getText();
-		if (temp != null) {
-			setUsername(temp);
-		}
+		changeUsername(jTextField1.getText());
 	}
 
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
