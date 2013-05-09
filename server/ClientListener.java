@@ -49,5 +49,4 @@ public class ClientListener extends Thread {
 		int type = protocol.getType();
 		serverDispatcher.dispatchMessage(clientInfo, protocol);
 	}
-	
 }

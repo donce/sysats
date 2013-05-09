@@ -12,7 +12,7 @@ public class Protocol implements Serializable {
 	
 	private int type = 0;
 	
-	private String message = null;	
+	private String string = null;	
 	private byte[] data = null;
 	
 	private static final Date date = new Date();
@@ -24,11 +24,14 @@ public class Protocol implements Serializable {
 	public Protocol(String username, String message) {
 		this.type = 1;
 		this.username = username;
-		this.message = message;
+		this.string = message;
 	}
 	
-	public void Protocol(byte[] data) {
+	public Protocol(String username, String filename, byte[] data) {
 		this.type = 2;
+		this.username = username;
+		this.string = filename;
+		this.data = data;
 	}
 
 	public void updateTime() {
@@ -47,8 +50,18 @@ public class Protocol implements Serializable {
 		return this.username;
 	}
 
+	//for message
 	public String getMessage() {
-		return this.message;
+		return this.string;
+	}
+	
+	//for file
+	public String getFilename() {
+		return this.string;
+	}
+	
+	public byte[] getData() {
+		return this.data;
 	}
 
 }

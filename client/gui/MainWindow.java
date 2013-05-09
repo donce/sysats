@@ -258,15 +258,19 @@ public class MainWindow extends javax.swing.JFrame {
 		}
 	}
 	
-	private void sendMessage(String message) {
-		System.out.println(message);
-		Protocol protocol = new Protocol(this.getUsername(), message);
+	private void sendProtocol(Protocol protocol) {
 		try {
 			out.writeObject(protocol);
 			out.flush();
 		}
 		catch (IOException e) {
 		}
+	}
+	
+	private void sendMessage(String message) {
+		System.out.println(message);
+		Protocol protocol = new Protocol(this.getUsername(), message);
+		sendProtocol(protocol);
 	}
 	
 	private void sendFile(File file) {
@@ -285,12 +289,8 @@ public class MainWindow extends javax.swing.JFrame {
 		catch (IOException e) {
 			return;
 		}
-		//TODO: send data to server, server sends to clients
-//		try {
-//		} catch (IOException e) {
-//			System.err.println("Failed to send a file.");
-//		}
-		sendMessage("File sent: " + file.getName());
+		Protocol protocol = new Protocol(this.getUsername(), file.getName(), data);
+		sendProtocol(protocol);
 	}
 	
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {

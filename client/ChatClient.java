@@ -1,6 +1,9 @@
 package sysats.client;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,6 +14,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
+
+import javax.swing.JFileChooser;
 
 import sysats.client.gui.MainWindow;
 import sysats.server.Protocol;
@@ -69,10 +74,38 @@ public class ChatClient {
 		}
 	}
 	
+	void receiveFile(Protocol protocol) {
+		JFileChooser fc = new JFileChooser();
+		fc.setApproveButtonText("Išsaugoti");
+		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			if (!file.exists()) {
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					return;
+				}
+			}
+			FileOutputStream stream;
+			try {
+				stream = new FileOutputStream(file);
+			} catch (FileNotFoundException e) {
+				return;
+			}
+			try {
+				stream.write(protocol.getData());
+				stream.close();
+			} catch (IOException e) {
+			}
+		}
+	}
+	
 	void handleProtocol(Protocol protocol) {
 		int type = protocol.getType();
 		if (type == 1)
 			mw.updateTextPane(protocol);
+		else if (type == 2)
+			receiveFile(protocol);
 	}
 
 	public synchronized void setUsername(String username) {
