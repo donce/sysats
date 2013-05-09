@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
+import sysats.protocol.FileProtocol;
+import sysats.protocol.MessageProtocol;
+
 import sysats.protocol.Protocol;
 
 public class ClientListener extends Thread {
@@ -46,7 +49,12 @@ public class ClientListener extends Thread {
 	}
 
 	private void handleProtocol(Protocol protocol) {
-		int type = protocol.getType();
-		serverDispatcher.dispatchMessage(clientInfo, protocol);
+		if (protocol instanceof MessageProtocol) {
+			serverDispatcher.dispatchMessage(clientInfo, protocol);
+		}
+		else if (protocol instanceof FileProtocol) {
+			//TODO: send message about file
+			serverDispatcher.dispatchMessage(clientInfo, protocol);
+		}
 	}
 }

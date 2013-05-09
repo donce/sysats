@@ -18,6 +18,8 @@ import java.net.Socket;
 import javax.swing.JFileChooser;
 
 import sysats.client.gui.MainWindow;
+import sysats.protocol.FileProtocol;
+import sysats.protocol.MessageProtocol;
 import sysats.protocol.Protocol;
 
 public class ChatClient {
@@ -74,7 +76,7 @@ public class ChatClient {
 		}
 	}
 	
-	void receiveFile(Protocol protocol) {
+	void receiveFile(FileProtocol protocol) {
 		JFileChooser fc = new JFileChooser();
 		fc.setApproveButtonText("Išsaugoti");
 		if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -101,11 +103,10 @@ public class ChatClient {
 	}
 	
 	void handleProtocol(Protocol protocol) {
-		int type = protocol.getType();
-		if (type == 1)
-			mw.updateTextPane(protocol);
-		else if (type == 2)
-			receiveFile(protocol);
+		if (protocol instanceof MessageProtocol)
+			mw.updateTextPane((MessageProtocol)protocol);
+		else if (protocol instanceof FileProtocol)
+			receiveFile((FileProtocol)protocol);
 	}
 
 	public synchronized void setUsername(String username) {

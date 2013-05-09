@@ -18,6 +18,8 @@ import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
+import sysats.protocol.FileProtocol;
+import sysats.protocol.MessageProtocol;
 import sysats.protocol.Protocol;
 
 public class MainWindow extends javax.swing.JFrame {
@@ -269,8 +271,7 @@ public class MainWindow extends javax.swing.JFrame {
 	
 	private void sendMessage(String message) {
 		System.out.println(message);
-		Protocol protocol = new Protocol(this.getUsername(), message);
-		sendProtocol(protocol);
+		sendProtocol(new MessageProtocol(this.getUsername(), message));
 	}
 	
 	private void sendFile(File file) {
@@ -289,8 +290,7 @@ public class MainWindow extends javax.swing.JFrame {
 		catch (IOException e) {
 			return;
 		}
-		Protocol protocol = new Protocol(this.getUsername(), file.getName(), data);
-		sendProtocol(protocol);
+		sendProtocol(new FileProtocol(this.getUsername(), file.getName(), data));
 	}
 	
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -318,7 +318,7 @@ public class MainWindow extends javax.swing.JFrame {
 		this.username = username;
 	}
 
-	public synchronized void updateTextPane(Protocol protocol) {
+	public synchronized void updateTextPane(MessageProtocol protocol) {
 		System.out.println("Zinute: " + protocol.getMessage());
 		Document doc = jTextPane2.getDocument();
 		try {
