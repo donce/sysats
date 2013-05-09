@@ -36,8 +36,6 @@ public class MainWindow extends javax.swing.JFrame {
 	private ObjectOutputStream out = null;
 	private String username = "Bevardis";
 	
-	private final byte FILE_SIGNATURE = 7;
-	
 	private Action enterAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent tf) {
 			sendCurrentMessage();
@@ -79,7 +77,7 @@ public class MainWindow extends javax.swing.JFrame {
 
 		jScrollPane1.setViewportView(jTextArea1);
 
-		jButton1.setText("Siusti");
+		jButton1.setText("Siųsti");
 		jButton1.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButton1ActionPerformed(evt);
@@ -94,21 +92,21 @@ public class MainWindow extends javax.swing.JFrame {
 
 		jTextArea1.getActionMap().put("doEnterAction", enterAction);
 
-		jButton2.setText("Keisti naudotojo varda");
+		jButton2.setText("Keisti naudotojo vardą");
 		jButton2.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jButton2ActionPerformed(evt);
 			}
 		});
 
-		jButton3.setText("Atsijungti");
+		jButton3.setText("Siųsti failą");
 		jButton3.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				jButton3ActionPerformed(evt);
+				showSendFileDialog();
 			}
 		});
-
-		jTextField1.setText("anon");
+		
+		jTextField1.setText(username);
 		jTextField1.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
 				jTextField1ActionPerformed(evt);
@@ -298,18 +296,11 @@ public class MainWindow extends javax.swing.JFrame {
 		if (newUsername.length() == 0)
 			return;
 		sendProtocol(new ChangeUsernameProtocol(newUsername));
-//		setUsername(temp);
 	}
 	
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
 		// keisti varda listeneris
 		changeUsername(jTextField1.getText());
-	}
-
-	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
-		// atsijungti listeneris
-//		System.exit(-1);
-		showSendFileDialog();
 	}
 
 	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {

@@ -28,6 +28,7 @@ public class ClientListener extends Thread {
 
 	public void run() {
 		System.out.println("Logged in.");
+		//TODO: send message
 		while (!isInterrupted()) {
 			//pridedam timestampa, kai ateina is serverio zinute
 			Object object = null;
@@ -48,6 +49,7 @@ public class ClientListener extends Thread {
 		clientInfo.clientSender.interrupt();
 		serverDispatcher.removeClient(clientInfo);
 		System.out.println("Logged out.");
+		//TODO: send message
 	}
 
 	private void handleProtocol(Protocol protocol) {
