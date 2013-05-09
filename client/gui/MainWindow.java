@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
@@ -29,18 +30,19 @@ public class MainWindow extends javax.swing.JFrame {
 	private javax.swing.JTextField jTextField1;
 	private javax.swing.JTextArea jTextArea1;
 	private javax.swing.JTextPane jTextPane2;
-	private PrintWriter out = null;
-	private OutputStream output = null;
+	private ObjectOutputStream out = null;
 	private String username = "anon";
+	
+	private final byte FILE_SIGNATURE = 7;
+	
 	private Action enterAction = new AbstractAction() {
 		public void actionPerformed(ActionEvent tf) {
 			sendCurrentMessage();
 		}
 	};
 
-	public MainWindow(PrintWriter out, OutputStream output) {
+	public MainWindow(ObjectOutputStream out) {
 		this.out = out;
-		this.output = output;
 		this.setTitle("Sysats");
 		this.setResizable(false);
 		try {
@@ -247,48 +249,62 @@ public class MainWindow extends javax.swing.JFrame {
 			sendMessage(message);
 	}
 
+	private void showSendFileDialog() {
+		JFileChooser fc = new JFileChooser();
+		fc.setApproveButtonText("Siųsti");
+		if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = fc.getSelectedFile();
+			sendFile(file);
+		}
+	}
+	
 	private void sendMessage(String message) {
 		System.out.println(message);
-		out.println(this.getUsername() + "?" + message);
-		out.flush();
+		Protocol protocol = new Protocol(this.getUsername(), message);
+		try {
+			out.writeObject(protocol);
+			out.flush();
+		}
+		catch (IOException e) {
+		}
+	}
+	
+	private void sendFile(File file) {
+		InputStream input;
+		try {
+			input = new BufferedInputStream(new FileInputStream(file));
+		}
+		catch (FileNotFoundException e) {
+			return;
+		}
+
+		byte[] data = new byte[(int)file.length()];
+		try {
+			input.read(data);
+		}
+		catch (IOException e) {
+			return;
+		}
+		//TODO: send data to server, server sends to clients
+//		try {
+//		} catch (IOException e) {
+//			System.err.println("Failed to send a file.");
+//		}
+		sendMessage("File sent: " + file.getName());
 	}
 	
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
 		// keisti varda listeneris
 		String temp = jTextField1.getText();
 		if (temp != null) {
-			System.out.println("Ivyko");
 			setUsername(temp);
-			System.out.println("cia yra username " + getUsername());
 		}
 	}
 
 	private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {
 		// atsijungti listeneris
 //		System.exit(-1);
-		JFileChooser fc = new JFileChooser();
-		fc.setApproveButtonText("Siųsti");
-		if (fc.showOpenDialog(this) == fc.APPROVE_OPTION) {
-			File file = fc.getSelectedFile();			
-			InputStream input;
-			try {
-				input = new BufferedInputStream(new FileInputStream(file));
-			}
-			catch (FileNotFoundException e) {
-				return;
-			}
-
-			byte[] data = new byte[(int)file.length()];
-			try {
-				input.read(data);
-			}
-			catch (IOException e) {
-				return;
-			}
-			//TODO: send data to server, server sends to clients
-			
-			sendMessage("File sent: " + file.getName());
-		}
+		showSendFileDialog();
 	}
 
 	private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {
@@ -302,15 +318,13 @@ public class MainWindow extends javax.swing.JFrame {
 		this.username = username;
 	}
 
-	public synchronized void updateTextPane(String message) {
+	public synchronized void updateTextPane(Protocol protocol) {
+		System.out.println("Zinute: " + protocol.getMessage());
 		Document doc = jTextPane2.getDocument();
-		Protocol protocol = new Protocol();
-		protocol.setMessage(message);
 		try {
 			doc.insertString(doc.getLength(), protocol.getUsername() + "<"
-					+ protocol.getTimestamp() + "> : " + protocol.getMessage()
+					+ protocol.getTime() + "> : " + protocol.getMessage()
 					+ "\n", null);
-
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}

@@ -4,41 +4,50 @@ package sysats.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.sql.Timestamp;
-import java.util.Date;
+
+import sysats.server.Protocol;
 
 public class ClientListener extends Thread {
 	private ServerDispatcher serverDispatcher;
 	private ClientInfo clientInfo;
-	private BufferedReader in;
+	private ObjectInputStream in;
 
 	public ClientListener(ClientInfo clientInfo,
 			ServerDispatcher serverDispatcher) throws IOException {
 		this.clientInfo = clientInfo;
 		this.serverDispatcher = serverDispatcher;
 		Socket socket = clientInfo.clientSocket;
-		this.in = new BufferedReader(new InputStreamReader(
-				socket.getInputStream()));
+		this.in = new ObjectInputStream(socket.getInputStream());
 	}
 
 	public void run() {
 		System.out.println("Logged in.");
-		try {
-			Date date = new Date();
-			while (!isInterrupted()) {
-				//pridedam timestampa, kai ateina is serverio zinute
-				String text = in.readLine();
-				if (text == null)
-					break;
-				String message = new Timestamp(date.getTime()) + "?" + text;
-				serverDispatcher.dispatchMessage(clientInfo, message);
+		while (!isInterrupted()) {
+			//pridedam timestampa, kai ateina is serverio zinute
+			Object object = null;
+			try {
+				object = in.readObject();
+			} catch (IOException e) {
+			} catch (ClassNotFoundException e) {
 			}
-		} catch (IOException e) {
+			if (object == null)
+				break;
+			if (!(object instanceof Protocol))
+				continue;
+			Protocol protocol = (Protocol)object;
+			protocol.updateTime();
+			handleProtocol(protocol);
 		}
 		clientInfo.clientSender.interrupt();
 		serverDispatcher.removeClient(clientInfo);
 		System.out.println("Logged out.");
 	}
 
+	private void handleProtocol(Protocol protocol) {
+		int type = protocol.getType();
+		serverDispatcher.dispatchMessage(clientInfo, protocol);
+	}
+	
 }

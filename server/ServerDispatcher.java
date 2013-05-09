@@ -5,7 +5,7 @@ import java.util.Vector;
 
 //protocol timestamp:username:message
 public class ServerDispatcher extends Thread {
-	private Vector<String> messageQueue = new Vector<String>();// zinuciu
+	private Vector<Protocol> messageQueue = new Vector<Protocol>();// zinuciu
 																// eile
 	private ArrayList<ClientInfo> serverClients = new ArrayList<ClientInfo>();// naudotojai,
 
@@ -21,32 +21,32 @@ public class ServerDispatcher extends Thread {
 	}
 
 	public synchronized void dispatchMessage(ClientInfo clientInfo,
-			String message) {
-		messageQueue.add(message);
+			Protocol protocol) {
+		messageQueue.add(protocol);
 		notify();
 	}
 
-	private synchronized String getNextMessageFromQueue()
+	private synchronized Protocol getNextMessageFromQueue()
 			throws InterruptedException {
 		while (messageQueue.size() == 0)
 			wait();
-		String message = messageQueue.get(0);
+		Protocol protocol = messageQueue.get(0);
 		messageQueue.removeElementAt(0);
-		return message;
+		return protocol;
 	}
 
-	private synchronized void sendMessageToAllClients(String message) {
+	private synchronized void sendMessageToAllClients(Protocol protocol) {
 		for (int i = 0; i < serverClients.size(); i++) {
 			ClientInfo clientInfo = serverClients.get(i);
-			clientInfo.clientSender.sendMessage(message);
+			clientInfo.clientSender.sendMessage(protocol);
 		}
 	}
 
 	public void run() {
 		try {
 			while (true) {
-				String message = getNextMessageFromQueue();
-				sendMessageToAllClients(message);
+				Protocol protocol = getNextMessageFromQueue();
+				sendMessageToAllClients(protocol);
 			}
 		} catch (InterruptedException ie) {
 		}

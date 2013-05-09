@@ -1,51 +1,54 @@
 package sysats.server;
 
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Vector;
 
 public class ClientSender extends Thread {
-	private Vector<String> messageQueue = new Vector<String>();
+	private Vector<Protocol> messageQueue = new Vector<Protocol>();
 
 	private ServerDispatcher serverDispatcher;
 	private ClientInfo clientInfo;
-	private PrintWriter out;
+	private ObjectOutputStream out;
 
 	public ClientSender(ClientInfo clientInfo, ServerDispatcher serverDispatcher)
 			throws IOException {
 		this.clientInfo = clientInfo;
 		this.serverDispatcher = serverDispatcher;
 		Socket socket = clientInfo.clientSocket;
-		this.out = new PrintWriter(new OutputStreamWriter(
-				socket.getOutputStream()));
+		this.out = new ObjectOutputStream(socket.getOutputStream());
 	}
 
-	public synchronized void sendMessage(String message) {
-		messageQueue.add(message);
+	public synchronized void sendMessage(Protocol protocol) {
+		messageQueue.add(protocol);
 		notify();
 	}
 
-	private synchronized String getNextMessageFromQueue()
+	private synchronized Protocol getNextMessageFromQueue()
 			throws InterruptedException {
 		while (messageQueue.size() == 0)
 			wait();
-		String message = (String) messageQueue.get(0);
+		Protocol protocol = (Protocol)messageQueue.get(0);
 		messageQueue.removeElementAt(0);
-		return message;
+		return protocol;
 	}
 
-	private void sendMessageToClient(String message) {
-		out.println(message);
-		out.flush();
+	private void sendMessageToClient(Protocol protocol) {
+		try {
+			out.writeObject(protocol);
+			out.flush();
+		} catch (IOException e) {
+		}
 	}
 
 	public void run() {
 		try {
 			while (!isInterrupted()) {
-				String message = getNextMessageFromQueue();
-				sendMessageToClient(message);
+				Protocol protocol = getNextMessageFromQueue();
+				sendMessageToClient(protocol);
 			}
 		} catch (Exception e) {
 		}

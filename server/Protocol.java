@@ -1,36 +1,46 @@
 package sysats.server;
 
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
+
 //protocol timestamp:username:message
 
-public class Protocol {
-	private String timestamp = null;
+public class Protocol implements Serializable {
+	private Timestamp timestamp = null;
 	private String username = null;
-	private String message = null;
-	private String fullMessage = null;
-
+	
+	private int type = 0;
+	
+	private String message = null;	
+	private byte[] data = null;
+	
+	private static final Date date = new Date();
+	
 	public Protocol() {
 
 	}
 
-	public Protocol(String fullMessage) {
-		this.fullMessage = fullMessage;
+	public Protocol(String username, String message) {
+		this.type = 1;
+		this.username = username;
+		this.message = message;
+	}
+	
+	public void Protocol(byte[] data) {
+		this.type = 2;
 	}
 
-	public void setMessage(String message) {
-		this.fullMessage = message;
-		String temp = this.fullMessage;
-		this.timestamp = temp.substring(0, temp.indexOf('?'));
-		temp = temp.substring(temp.indexOf('?') + 1);// sitoj vietoj liko
-														// username:message
-		this.username = temp.substring(0, temp.indexOf('?'));
-		temp = temp.substring(temp.indexOf('?') + 1);// sitoj vietoj liko message
-														
-		this.message = temp;
-
+	public void updateTime() {
+		this.timestamp = new Timestamp(date.getTime());
+	}
+	
+	public int getType() {
+		return this.type;
 	}
 
-	public String getTimestamp() {
-		return this.timestamp;
+	public String getTime() {
+		return this.timestamp.toString();
 	}
 
 	public String getUsername() {
@@ -39,10 +49,6 @@ public class Protocol {
 
 	public String getMessage() {
 		return this.message;
-	}
-
-	public String getFullMessage() {
-		return this.fullMessage;
 	}
 
 }
