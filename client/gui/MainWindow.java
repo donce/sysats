@@ -18,7 +18,7 @@ import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 
-import sysats.server.Protocol;
+import sysats.protocol.Protocol;
 
 public class MainWindow extends javax.swing.JFrame {
 	private javax.swing.JButton jButton1;

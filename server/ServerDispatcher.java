@@ -3,6 +3,8 @@ package sysats.server;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import sysats.protocol.Protocol;
+
 //protocol timestamp:username:message
 public class ServerDispatcher extends Thread {
 	private Vector<Protocol> messageQueue = new Vector<Protocol>();// zinuciu

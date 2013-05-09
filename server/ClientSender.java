@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Vector;
 
+import sysats.protocol.Protocol;
+
 public class ClientSender extends Thread {
 	private Vector<Protocol> messageQueue = new Vector<Protocol>();
 

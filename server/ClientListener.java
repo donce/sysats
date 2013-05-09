@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
-import sysats.server.Protocol;
+import sysats.protocol.Protocol;
 
 public class ClientListener extends Thread {
 	private ServerDispatcher serverDispatcher;

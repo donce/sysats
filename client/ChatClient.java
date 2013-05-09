@@ -18,7 +18,7 @@ import java.net.Socket;
 import javax.swing.JFileChooser;
 
 import sysats.client.gui.MainWindow;
-import sysats.server.Protocol;
+import sysats.protocol.Protocol;
 
 public class ChatClient {
 	public static final String HOSTNAME = "localhost";
